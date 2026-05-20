@@ -5,8 +5,13 @@ const cors = require('cors');
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS Middleware
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
+
+// Other Middleware
 app.use(express.json());
 
 // Routes
@@ -16,6 +21,8 @@ app.use('/api/links', require('./routes/links'));
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(process.env.PORT || 5000, () => console.log('Server running on port 5000'));
+    app.listen(process.env.PORT || 5000, () => 
+        console.log('Server running on port 5000')
+    );
   })
   .catch(err => console.error('MongoDB connection error:', err));
