@@ -7,7 +7,7 @@ const app = express();
 
 // CORS Middleware
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://profilelinks-one.vercel.app/',
     credentials: true
 }));
 
