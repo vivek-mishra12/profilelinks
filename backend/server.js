@@ -7,7 +7,7 @@ const app = express();
 
 // CORS Middleware
 app.use(cors({
-    origin: 'https://profilelinks-one.vercel.app/',
+    origin: 'https://profilelinks-one.vercel.app',
     credentials: true
 }));
 

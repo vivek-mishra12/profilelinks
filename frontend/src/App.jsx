@@ -11,14 +11,14 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
-    axios.get('https://profilelinks.onrender.com/')
+    axios.get('https://profilelinks.onrender.com/api/links')
       .then(res => setLinks(res.data))
       .catch(err => console.error("Error fetching links", err));
   }, []);
 
   const handleLogin = async (password) => {
     try {
-      const res = await axios.post('https://profilelinks.onrender.com/', { password });
+      const res = await axios.post('https://profilelinks.onrender.com/api/links', { password });
       localStorage.setItem('adminToken', res.data.token);
       setIsAdmin(true);
       setShowLogin(false);
@@ -30,7 +30,7 @@ function App() {
   const handleAddLink = async (newLinkData) => {
     const token = localStorage.getItem('adminToken');
     try {
-      const res = await axios.post('https://profilelinks.onrender.com/', newLinkData, {
+      const res = await axios.post('https://profilelinks.onrender.com/api/links', newLinkData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setLinks([res.data.data, ...links]); 
