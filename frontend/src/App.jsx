@@ -71,7 +71,8 @@ function App() {
           <p className="text-center text-slate-600 text-sm mt-10">No links added yet.</p>
         ) : (
           links.map(link => (
-            <LinkCard key={link._id} title={link.title} url={link.url} />
+            /* UPDATED: Added 'id' prop passing 'link._id' to allow click analytics tracking tracking */
+            <LinkCard key={link._id} id={link._id} title={link.title} url={link.url} />
           ))
         )}
       </main>

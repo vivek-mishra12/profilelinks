@@ -1,26 +1,39 @@
+import  { useState } from 'react';
+import axios from 'axios';
 
-import { ExternalLink } from 'lucide-react';
+export default function LinkCard({ id, title, url }) {
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-const LinkCard = ({ title, url }) => {
-  return (
-    <div className="relative group w-full mb-5">
-      {/* This is the glowing background. 
-        It is fully transparent (opacity-0) until you hover over the group (group-hover:opacity-100).
-      */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition duration-500 group-hover:duration-200 animate-gradient-xy"></div>
+  const handleLinkClick = async () => {
+    if (isRedirecting) return;
+    setIsRedirecting(true);
+
+    try {
+      // 1. Send request to the backend to log the click tracking event
+      const res = await axios.post(`https://profilelinks.onrender.com/api/links/${id}/click`);
       
-      {/* The Actual Card */}
-      <a 
-        href={url} 
-        target="_blank" 
-        rel="noreferrer" 
-        className="relative flex items-center justify-between w-full p-5 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl transition-all duration-300"
-      >
-        <span className="font-bold text-slate-300 group-hover:text-white tracking-wide">{title}</span>
-        <ExternalLink size={20} className="text-slate-500 group-hover:text-cyan-300 transition-colors" />
-      </a>
-    </div>
-  );
-};
+      // 2. Open the destination URL returned by your backend in a new tab
+      window.open(res.data.url, '_blank', 'noopener,noreferrer');
+    } catch (err) {
+      console.error('Failed to log click analytic event:', err);
+      // Fallback: If tracking fails, open the link anyway so user experience isn't broken
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } finally {
+      setIsRedirecting(false);
+    }
+  };
 
-export default LinkCard;
+  return (
+    <button
+      onClick={handleLinkClick}
+      className="w-full mb-4 p-4 rounded-2xl bg-neutral-900 border border-neutral-800 text-white font-medium hover:border-cyan-500/50 hover:bg-neutral-800/50 transition-all text-center relative overflow-hidden group shadow-md"
+    >
+      {/* Background Hover Glow */}
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+      
+      <span className="relative z-10 text-sm tracking-wide transition-colors group-hover:text-cyan-400">
+        {title}
+      </span>
+    </button>
+  );
+}

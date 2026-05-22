@@ -37,4 +37,27 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// @route   POST /api/links/:id/click
+// @desc    Increment the click counter for a specific link
+// @access  Public
+router.post('/:id/click', async (req, res) => {
+  try {
+    const link = await Link.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { clicks: 1 } }, // Atomic operation to increment clicks by 1
+      { new: true }
+    );
+
+    if (!link) {
+      return res.status(404).json({ error: 'Link not found' });
+    }
+
+    // Return the URL so the frontend knows where to redirect the user
+    return res.status(200).json({ url: link.url });
+  } catch (error) {
+    console.error('Click tracking error:', error);
+    return res.status(500).json({ error: 'Server error tracking click' });
+  }
+});
+
 module.exports = router;
