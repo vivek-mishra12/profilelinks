@@ -4,6 +4,7 @@ import { Lock } from 'lucide-react';
 import LinkCard from './components/LinkCard';
 import LoginModal from './components/LoginModal';
 import AdminPanel from './components/AdminPanel';
+import AIChatWidget from './components/AIChatWidget'; // 1. Import the new component
 
 function App() {
   const [links, setLinks] = useState([]);
@@ -42,11 +43,10 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen p-6 max-w-xl mx-auto w-full bg-[#050505] selection:bg-cyan-500/30">
+    <div className="flex flex-col items-center justify-between min-h-screen p-6 max-w-xl mx-auto w-full bg-[#050505] selection:bg-cyan-500/30 relative">
       
       {/* Header */}
       <header className="flex flex-col items-center text-center mt-12 mb-12 w-full z-10">
-        
         {/* Glowing Welcome Badge */}
         <div className="relative group mb-6 cursor-default">
           <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-500 animate-gradient-xy"></div>
@@ -92,6 +92,9 @@ function App() {
       </footer>
 
       {showLogin && <LoginModal onVerify={handleLogin} onClose={() => setShowLogin(false)} />}
+
+      {/* 2. Render the isolated AI Chatbot floating over the viewport */}
+      <AIChatWidget />
     </div>
   );
 }
