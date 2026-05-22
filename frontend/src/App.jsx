@@ -4,7 +4,7 @@ import { Lock } from 'lucide-react';
 import LinkCard from './components/LinkCard';
 import LoginModal from './components/LoginModal';
 import AdminPanel from './components/AdminPanel';
-import AIChatWidget from './components/AIChatWidget'; // 1. Import the new component
+import AIChatWidget from './components/AIChatWidget';
 
 function App() {
   const [links, setLinks] = useState([]);
@@ -71,7 +71,7 @@ function App() {
           <p className="text-center text-slate-600 text-sm mt-10">No links added yet.</p>
         ) : (
           links.map(link => (
-            /* UPDATED: Added 'id' prop passing 'link._id' to allow click analytics tracking tracking */
+            /* Passed link._id as 'id' prop to support backend click tracking */
             <LinkCard key={link._id} id={link._id} title={link.title} url={link.url} />
           ))
         )}
@@ -80,7 +80,8 @@ function App() {
       {/* Admin Panel */}
       <footer className="w-full mt-12 mb-6 flex justify-center z-10">
         {isAdmin ? (
-          <AdminPanel onAdd={handleAddLink} />
+          /* FIXED: Added links={links} to pass data to the link analytics dashboard subpanel */
+          <AdminPanel onAdd={handleAddLink} links={links} />
         ) : (
           <button 
             className="group flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-slate-600 hover:text-cyan-400 transition-colors"
@@ -94,7 +95,7 @@ function App() {
 
       {showLogin && <LoginModal onVerify={handleLogin} onClose={() => setShowLogin(false)} />}
 
-      {/* 2. Render the isolated AI Chatbot floating over the viewport */}
+      {/* Render the isolated AI Chatbot floating over the viewport */}
       <AIChatWidget />
     </div>
   );
