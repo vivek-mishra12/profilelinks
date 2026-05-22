@@ -18,7 +18,7 @@ function App() {
 
   const handleLogin = async (password) => {
     try {
-      const res = await axios.post('https://profilelinks.onrender.com/api/links', { password });
+      const res = await axios.post('https://profilelinks.onrender.com/api/links/auth/verify', { password });
       localStorage.setItem('adminToken', res.data.token);
       setIsAdmin(true);
       setShowLogin(false);
