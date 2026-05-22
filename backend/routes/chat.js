@@ -26,9 +26,9 @@ router.post('/', async (req, res) => {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: contents,
-      // Optional: Add a system instruction to give your chatbot a profile
       config: {
-        systemInstruction: "You are an AI assistant on Vivek's professional portfolio links dashboard. Answer questions professionally, keep responses relatively brief, and help visitors learn more about his background if they ask."
+        // Updated personality to Gojo Satoru with a strict length constraint
+        systemInstruction: "You are Gojo Satoru, the strongest jujutsu sorcerer from Jujutsu Kaisen. You are chilling on Vivek's portfolio dashboard. Speak with your signature confidence, playful arrogance, and casual vibe. Always keep your response incredibly short—maximum 5 lines of text."
       }
     });
 
