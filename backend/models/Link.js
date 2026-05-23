@@ -11,7 +11,12 @@ const LinkSchema = new mongoose.Schema({
   },
   clicks: {
     type: Number,
-    default: 0, // Tracks how many times this link has been clicked
+    default: 0,
+  },
+  category: {
+    type: String,
+    required: true,
+    default: 'Socials', // Default category classification
   },
 }, { timestamps: true });
 

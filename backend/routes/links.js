@@ -37,6 +37,27 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// @route   POST /api/links
+// @desc    Create a new link entry
+// @access  Private (Admin Only)
+router.post('/', auth, async (req, res) => {
+  const { title, url, category } = req.body; // Extract category
+
+  try {
+    const newLink = new Link({
+      title,
+      url,
+      category: category || 'Socials', // Save to document instance
+    });
+
+    const savedLink = await newLink.save();
+    res.status(201).json({ success: true, data: savedLink });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error creating link' });
+  }
+});
+
 // @route   POST /api/links/:id/click
 // @desc    Increment the click counter for a specific link
 // @access  Public

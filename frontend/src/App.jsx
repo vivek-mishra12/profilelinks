@@ -10,6 +10,10 @@ function App() {
   const [links, setLinks] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  
+  // Categorization Filters State
+  const [activeTab, setActiveTab] = useState('All');
+  const tabs = ['All', 'Socials', 'Coding', 'Portfolio', 'Other'];
 
   useEffect(() => {
     axios.get('https://profilelinks.onrender.com/api/links')
@@ -42,11 +46,17 @@ function App() {
     }
   };
 
+  // Filter links dynamically based on the active tab selection
+  const filteredLinks = links.filter(link => {
+    if (activeTab === 'All') return true;
+    return (link.category || 'Socials') === activeTab;
+  });
+
   return (
     <div className="flex flex-col items-center justify-between min-h-screen p-6 max-w-xl mx-auto w-full bg-[#050505] selection:bg-cyan-500/30 relative">
       
       {/* Header */}
-      <header className="flex flex-col items-center text-center mt-12 mb-12 w-full z-10">
+      <header className="flex flex-col items-center text-center mt-12 mb-8 w-full z-10">
         {/* Glowing Welcome Badge */}
         <div className="relative group mb-6 cursor-default">
           <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-500 animate-gradient-xy"></div>
@@ -65,13 +75,29 @@ function App() {
         </p>
       </header>
 
+      {/* Dynamic Folders / Tab Switcher Navigation Bar */}
+      <div className="w-full flex items-center justify-start gap-1 overflow-x-auto pb-3 mb-6 border-b border-slate-900/80 z-10 scrollbar-none">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-1.5 text-xs font-semibold tracking-wide uppercase rounded-full transition-all whitespace-nowrap border ${
+              activeTab === tab
+                ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30 shadow-md shadow-cyan-500/5'
+                : 'bg-transparent text-slate-500 border-transparent hover:text-slate-300'
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
       {/* Public Links Section */}
       <main className="w-full flex-grow z-10">
-        {links.length === 0 ? (
-          <p className="text-center text-slate-600 text-sm mt-10">No links added yet.</p>
+        {filteredLinks.length === 0 ? (
+          <p className="text-center text-slate-600 text-xs italic mt-10">No items categorized inside this folder folder.</p>
         ) : (
-          links.map(link => (
-            /* Passed link._id as 'id' prop to support backend click tracking */
+          filteredLinks.map(link => (
             <LinkCard key={link._id} id={link._id} title={link.title} url={link.url} />
           ))
         )}
@@ -80,7 +106,6 @@ function App() {
       {/* Admin Panel */}
       <footer className="w-full mt-12 mb-6 flex justify-center z-10">
         {isAdmin ? (
-          /* FIXED: Added links={links} to pass data to the link analytics dashboard subpanel */
           <AdminPanel onAdd={handleAddLink} links={links} />
         ) : (
           <button 
