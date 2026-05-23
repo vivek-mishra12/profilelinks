@@ -16,9 +16,10 @@ router.post('/auth/verify', async (req, res) => {
 });
 
 // GET: Fetch all links (Public)
+// GET: Fetch all links sorted by order index (Public)
 router.get('/', async (req, res) => {
   try {
-    const links = await Link.find().sort({ createdAt: -1 });
+    const links = await Link.find().sort({ order: 1 }); // Sort chronologically ascending by order index
     res.json(links);
   } catch (err) {
     res.status(500).json({ message: 'Server Error' });
@@ -26,26 +27,27 @@ router.get('/', async (req, res) => {
 });
 
 // POST: Add a new link (Protected - Cleanly combined with categories, analytics & icons)
+// POST: Add a new link (Protected)
 router.post('/', auth, async (req, res) => {
   try {
     const { title, url, icon, category } = req.body;
 
-    if (!title || !url) {
-      return res.status(400).json({ message: 'Title and URL are required.' });
-    }
+    // Dynamically grab the highest order value to safely append new cards to the very bottom
+    const highestOrderLink = await Link.findOne().sort({ order: -1 });
+    const nextOrder = highestOrderLink ? highestOrderLink.order + 1 : 0;
 
     const newLink = new Link({ 
       title, 
       url, 
       icon,
-      category: category || 'Socials' // Correctly saves category fallback values
+      category: category || 'Socials',
+      order: nextOrder
     });
 
     await newLink.save();
     res.status(201).json({ success: true, data: newLink });
   } catch (err) {
-    console.error('Error adding link:', err);
-    res.status(500).json({ message: 'Error adding link to database.' });
+    res.status(500).json({ message: 'Error adding link' });
   }
 });
 
@@ -69,6 +71,31 @@ router.post('/:id/click', async (req, res) => {
   } catch (error) {
     console.error('Click tracking error:', error);
     return res.status(500).json({ error: 'Server error tracking click' });
+  }
+});
+
+// PUT: Bulk reorder all links sequence index (Protected)
+router.put('/reorder', auth, async (req, res) => {
+  try {
+    const { orderedLinks } = req.body; // Expects an ordered array: [{ _id: '...', order: 0 }, ...]
+
+    if (!orderedLinks || !Array.isArray(orderedLinks)) {
+      return res.status(400).json({ message: 'Invalid data payload' });
+    }
+
+    // Process parallel atomic updates using bulkWrite for top execution speed
+    const bulkOperations = orderedLinks.map((item, index) => ({
+      updateOne: {
+        filter: { _id: item._id },
+        update: { $set: { order: index } }
+      }
+    }));
+
+    await Link.bulkWrite(bulkOperations);
+    res.json({ success: true, message: 'Ordering positions updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating sorting order positions' });
   }
 });
 
