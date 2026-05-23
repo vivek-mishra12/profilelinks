@@ -9,6 +9,9 @@ const LinkSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  icon: {
+    type: String,
+  },
   clicks: {
     type: Number,
     default: 0,
@@ -16,7 +19,7 @@ const LinkSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    default: 'Socials', // Default category classification
+    default: 'Socials', // Default value so old records don't break
   },
 }, { timestamps: true });
 

@@ -25,36 +25,27 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST: Add a new link (Protected)
+// POST: Add a new link (Protected - Cleanly combined with categories, analytics & icons)
 router.post('/', auth, async (req, res) => {
   try {
-    const { title, url, icon } = req.body;
-    const newLink = new Link({ title, url, icon });
-    await newLink.save();
-    res.json({ success: true, data: newLink });
-  } catch (err) {
-    res.status(500).json({ message: 'Error adding link' });
-  }
-});
+    const { title, url, icon, category } = req.body;
 
-// @route   POST /api/links
-// @desc    Create a new link entry
-// @access  Private (Admin Only)
-router.post('/', auth, async (req, res) => {
-  const { title, url, category } = req.body; // Extract category
+    if (!title || !url) {
+      return res.status(400).json({ message: 'Title and URL are required.' });
+    }
 
-  try {
-    const newLink = new Link({
-      title,
-      url,
-      category: category || 'Socials', // Save to document instance
+    const newLink = new Link({ 
+      title, 
+      url, 
+      icon,
+      category: category || 'Socials' // Correctly saves category fallback values
     });
 
-    const savedLink = await newLink.save();
-    res.status(201).json({ success: true, data: savedLink });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error creating link' });
+    await newLink.save();
+    res.status(201).json({ success: true, data: newLink });
+  } catch (err) {
+    console.error('Error adding link:', err);
+    res.status(500).json({ message: 'Error adding link to database.' });
   }
 });
 
